@@ -1,19 +1,17 @@
 
 class DefinitionGenerator {
-    apiKey;
     openAiURL;
 
-     constructor(apiKey) {
-        this.apiKey = apiKey;
+     constructor() {
         this.openAiURL = import.meta.env.VITE_OPENAI_URL;
     }
 
-     async generateDefinition(story) {
+     async generateDefinition(apikey, story) {
          //return await this.OpenAIDaVinciCompletion(story);
-         return await this.OpenAIGPTCompletion(story);
+         return await this.OpenAIGPTCompletion(apikey, story);
     }
 
-    async OpenAIDaVinciCompletion(story) {
+    async OpenAIDaVinciCompletion(apikey, story) {
         let myHeaders = new Headers();
         myHeaders.append("Authorization", "Bearer " + this.apiKey);
         myHeaders.append("Content-Type", "application/json");
@@ -41,9 +39,9 @@ class DefinitionGenerator {
         return JSON.parse(processResponseText(text));
     }
 
-    async OpenAIGPTCompletion(story) {
+    async OpenAIGPTCompletion(apikey, story) {
         let myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer " + this.apiKey);
+        myHeaders.append("Authorization", "Bearer " + apikey);
         myHeaders.append("Content-Type", "application/json");
 
         let prompt = "Create an OpenAPI definition as JSON for the following use case: " + story;

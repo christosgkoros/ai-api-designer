@@ -8,7 +8,7 @@ import {DefinitionGenerator} from '@/util/DefinitionGenerator'
 export default {
   data() {
     return {
-      apikey: "c2stRE9LNDRYaGRPcklxeEZCSkRIRHlUM0JsYmtGSnd0Q0pqb1lmWmEwVGJIUE1zZG9L",
+      apikey: "",
       story: "",
       definition: "",
       showLoading: false,
@@ -17,7 +17,7 @@ export default {
       submitsCount: 0,
       start: 0,
       elapsed: 0,
-      generator: new DefinitionGenerator(this.apikey)
+      generator: new DefinitionGenerator()
     }
   },
   methods: {
@@ -54,7 +54,7 @@ export default {
       this.showError = false;
       this.submitsCount++;
 
-      this.generator.generateDefinition(atob(this.apikey), this.story)
+      this.generator.generateDefinition(this.apikey, this.story)
           .then(definition => {
             this.definition = JSON.stringify(definition);
             this.elapsed = (Date.now() - this.start) / 1000;
@@ -93,7 +93,13 @@ export default {
 
     <div class="row">
       <div class="col-md-6">
-        <div class="row-md"><h5 class="text-primary">User stories</h5> <textarea id="story" class="form-control" rows=10
+        <div class="row-md">
+          <h5 class="text-primary">Your OpenAI API key</h5><a href="https://platform.openai.com/account/api-keys" target="_blank" >(Create one!)</a>
+        </div>
+        <div>
+          <input type="password" id="apikey" v-model="apikey"/>
+        </div>
+        <div class="row-md" id="storiesrow"><h5 class="text-primary">User stories</h5> <textarea id="story" class="form-control" rows=10
                                                                                  v-model="story"
                                                                                  placeholder="1. As a librarian i want to retrieve the list of books in the library"
                                                                                  :disabled="showLoading"></textarea>
@@ -130,3 +136,9 @@ export default {
     </div>
   </div>
 </template>
+
+<style>
+#storiesrow {
+  margin-top: 20px;
+}
+</style>
