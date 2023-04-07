@@ -1,4 +1,4 @@
-
+class OpenAIError extends Error {}
 class DefinitionGenerator {
     openAiURL;
 
@@ -73,8 +73,11 @@ class DefinitionGenerator {
         console.log("Sending request to OpenAI GPT for the use case -> " + prompt);
         this.start = Date.now();
         let response = await fetch(this.openAiURL + "/chat/completions", requestOptions)
-        let generation = await response.json();
-        let text = generation.choices[0].message.content;
+        let responseJSON = await response.json();
+        if (!response.ok && !response.redirected) {
+            throw new OpenAIError(responseJSON.error.message);
+        }
+        let text = responseJSON.choices[0].message.content;
         console.log(text);
         return JSON.parse(processResponseText(text));
     }
@@ -92,4 +95,4 @@ function processResponseText(text) {
     }
 }
 
-export {DefinitionGenerator};
+export {DefinitionGenerator, OpenAIError};

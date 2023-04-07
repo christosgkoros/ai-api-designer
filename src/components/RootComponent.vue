@@ -3,11 +3,13 @@ import SwaggerUIBundle from 'swagger-ui';
 import 'swagger-ui/dist/swagger-ui.css';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import {DefinitionGenerator} from '@/util/DefinitionGenerator'
+import {DefinitionGenerator, OpenAIError} from '@/util/DefinitionGenerator'
 
+const DEFAULT_ERROR = "An unexpected error occured!";
 export default {
   data() {
     return {
+      errormsg: DEFAULT_ERROR,
       apikey: "",
       story: "",
       definition: "",
@@ -52,6 +54,7 @@ export default {
       console.log("submitting " + this.story);
       this.showLoading = true;
       this.showError = false;
+      this.errormsg = DEFAULT_ERROR;
       this.submitsCount++;
 
       this.generator.generateDefinition(this.apikey, this.story)
@@ -61,7 +64,7 @@ export default {
             this.renderSwaggerUI(definition);
           })
           .catch(error => {
-            console.log("error: ", error);
+            console.log("error: ", error.message);
             gtag('event', 'api_error', {
               "count": this.submitsCount,
               "story": this.story,
@@ -69,6 +72,9 @@ export default {
               "elapsed": this.elapsed,
               "error": error
             });
+            if (error instanceof OpenAIError) {
+              this.errormsg = error.message;
+            }
             this.showError = true;
             this.showLoading = false;
           });
@@ -121,7 +127,7 @@ export default {
       <div class="col-md-6">
         <div class="row-md" v-show="showError">
           <div class="alert alert-danger" role="alert">
-            An unexpected error occured!
+            {{errormsg}}
           </div>
         </div>
         <div class="row-md" v-show="showResults">
